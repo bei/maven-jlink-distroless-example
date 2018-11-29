@@ -1,0 +1,107 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>net.agilhard.example</groupId>
+    <artifactId>maven-jlink-distroless-example</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>maven-jlink-distroless-example-package</artifactId>
+  <packaging>jlink</packaging>
+
+  <properties>
+    <docker.registry>localhost:80</docker.registry>
+    <docker.baseimage>gcr.io/distroless/base</docker.baseimage>
+  </properties>
+  <build>
+    <plugins>
+
+      <plugin>
+	<artifactId>maven-jlink-plugin</artifactId>
+	<groupId>org.apache.maven.plugins</groupId>
+	<extensions>true</extensions>
+      </plugin>
+
+      <!-- 
+      neither gcr.io/distroless/base< nor the jlink build
+      do include libz.so needed by the java executable
+      thus we copy it from the system
+      -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+	<groupId>org.apache.maven.plugins</groupId>
+        <executions>
+          <execution>
+            <id>copy-resource-one</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+	    
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>/lib64</directory>
+                  <includes>
+                    <include>libz.so.1</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- use fabric8 docker-maven-plugin to build the docker image -->
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>build-docker-image</id>
+            <goals>
+              <goal>build</goal>
+	      <goal>push</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <images>
+                <image>
+                  <name>agilhard/maven-jlink-distroless-example</name>
+		  <registry>${docker.registry}</registry>
+		  <build>
+		    <entryPoint>
+		      <exec>
+			<arg>/jlink/bin/java</arg>
+			<arg>-m</arg>
+			<arg>app/net.agilhard.example.HelloWorld</arg>
+		      </exec>
+		    </entryPoint>
+		    <from>${docker.baseimage}</from>
+		    
+		    <assembly>
+		      <basedir>/</basedir>
+		      <descriptor>${project.basedir}/src/main/resources/assembly.xml</descriptor>
+		    </assembly>
+                  </build>
+                </image>
+              </images>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>maven-jlink-distroless-example-app</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+  
+</project>

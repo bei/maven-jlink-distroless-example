@@ -1,0 +1,32 @@
+<assembly>
+  <id>app</id>
+  <fileSets>
+    <fileSet>
+      <includes>
+        <include>bin/*</include>
+      </includes>
+      <directory>${project.build.directory}/maven-jlink</directory>
+      <outputDirectory>jlink</outputDirectory>
+      <fileMode>0755</fileMode>
+    </fileSet>
+    <fileSet>
+      <includes>
+        <include>lib/**</include>
+        <include>conf/**</include>
+        <include>include/**</include>
+        <include>legal/**</include>
+      </includes>
+      <directory>${project.build.directory}/maven-jlink</directory>
+      <outputDirectory>jlink</outputDirectory>
+      <fileMode>0644</fileMode>
+    </fileSet>
+    <fileSet>
+      <includes>
+        <include>libz.so.1</include>
+      </includes>
+      <directory>${project.build.directory}/lib</directory>
+      <outputDirectory>jlink/lib</outputDirectory>
+      <fileMode>0644</fileMode>
+    </fileSet>
+  </fileSets>
+</assembly>
