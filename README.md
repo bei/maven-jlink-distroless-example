@@ -25,3 +25,17 @@ docker run agilhard/maven-jlink-distroless-example
 
 [maven-jar-plugin](https://maven.apache.org/plugins/maven-jar-plugin/) don't know how to define a module with a main-class (See: [MJAR-238](https://issues.apache.org/jira/projects/MJAR/issues/MJAR-238)).
 
+## Use the newer other example instead ;-)
+
+This example here worked when it was created some time ago.
+
+It may no longer work now due to incompatible changes on the Source Code of the [maven-jlink-plugin](https://maven.apache.org/plugins/maven-jlink-plugin/) in the meantime.
+
+There is another example of doing this which is using a forked and enhanced version of that maven-jlink-plugin, the [jlink-jpackager-maven-plugin](https://github.com/agilhard-oss/jlink-jpackager-maven-plugin).
+
+This other example is guaranteed to work better and should work still.
+
+You can find it here: [jlink-distroless-maven-example](https://github.com/agilhard-oss/jlink-distroless-maven-example).
+
+
+
